@@ -2,6 +2,7 @@ from ultralytics import YOLO
 import cv2
 import json
 import numpy as np
+from utils import get_ball_coords, plot_shot
 
 category_map = {}
 def main(annotations_path):
@@ -22,16 +23,43 @@ def main(annotations_path):
     {"Right Corner Flag" : [90, 0]}  # Right corner flag
     ]
     bbox_info = extract_coordinates(annotations_path=annotations_path)
+    print(len(bbox_info))
     homography_matrix = calculate_homography_matrix(bbox_info=bbox_info, world_points=world_points)
     transformed_bbox_info = convert_pitch_coordinates(homography_matrix, bbox_info)
-    print(transformed_bbox_info)
+    ball_cords = get_ball_coords(transformed_bbox_info)
+    angle = calculate_angle(ball_cords[0], ball_cords[1])
+    plot_shot(ball_cords[0], ball_cords[1], angle)  
+
+def calculate_angle(x,y):
+    """
+    Arguments:
+        x(float) - the x coordinate of where the shot was taken
+        y(float) - the y coordinate of where the shot was taken
+    Return:
+        angle(float) - the angle between the goal and where the shot was taken
+    """
+    # Left and Right goal Post
+    g0, g1 = np.array([41.34, 0]), np.array([48.66,0])
+    p = np.array([x,y])
+    v0 = (g0) - (p)
+    v1 = (g1) - (p)
+    cos_theta = np.dot(v0,v1)/ (np.linalg.norm(v0) * np.linalg.norm(v1))
+    angle = np.arccos(np.clip(cos_theta, -1,1))
+    return np.degrees(angle)
+
 
 
 def convert_pitch_coordinates(homography_matrix, bbox_info):
-    transformed_bbox_info = {}
+    """
+    Arguments:
+        homography_matrix(np.array) - homography matrix used to convert coordinates of the ball onto a 2d plane
+        bbox_info(list) - a list of dictionaries containing information of key features mapped to their respective coordinates
+    Return:
+        transformed_bbox_info(list) - a list of dictionaries containing information of key features mapped to their respective transformed coordinates
+    """
+    transformed_bbox_info = []
     for feature in bbox_info:
         for label, coords in feature.items():
-            transformed_bbox_info[label] = []
             x,y,w,h = coords[0], coords[1], coords[2], coords[3]
             bottom_center_x = x + w / 2
             bottom_center_y = y + h
@@ -39,13 +67,10 @@ def convert_pitch_coordinates(homography_matrix, bbox_info):
             transformed_point = np.dot(homography_matrix, homogeneous_point)
             world_x = transformed_point[0] / transformed_point[2]
             world_y = transformed_point[1] / transformed_point[2]
-            transformed_bbox_info[label] = [world_x, world_y]
+            transformed_bbox_info.append({label : [world_x, world_y]}) 
     return transformed_bbox_info
-def predict_players_positioning(path_to_model, img_path):
-    model = YOLO(path_to_model)
-    # Assume we can pick up the ball
-    results = model(img_path)
-    
+
+
 def calculate_homography_matrix(bbox_info, world_points):
     """
     Arguments: 
@@ -57,15 +82,16 @@ def calculate_homography_matrix(bbox_info, world_points):
     """
     image_points = []
     world_points_transformed = []
-    world_points_dict = {list(item.keys())[0]: list(item.values())[0] for item in world_points}
-    
+    world_points_dict = {list(item.keys())[0]: list(item.values())[0] for item in world_points if list(item.keys())[0] != 'Ball'}
+
     for item in bbox_info:
         feature_name = list(item.keys())[0]
         bbox = list(item.values())[0]
         mid_x = bbox[0] + bbox[2] / 2
         mid_y = bbox[1] + bbox[3] / 2
-        image_points.append([mid_x, mid_y])
-        world_points_transformed.append(world_points_dict[feature_name])
+        if feature_name in world_points_dict:
+            image_points.append([mid_x, mid_y])
+            world_points_transformed.append(world_points_dict[feature_name])
 
     image_points = np.array(image_points, dtype=np.float32)
     world_points_transformed = np.array(world_points_transformed, dtype=np.float32) 
@@ -100,6 +126,8 @@ def extract_coordinates(annotations_path):
 
 if __name__ == "__main__":
     annotations_path = 'screenshots/annotations/instances_default.json'
+    model_path = "models/players/50EpochModel.pt"
+    img_path = "screenshots/Yamal Free Kick.png"
     main(annotations_path=annotations_path)
 
 
