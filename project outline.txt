@@ -1,0 +1,14 @@
+1. Take a frame extract position data(x,y), distance to goal, shooting angle
+2. Evaluate xG based on these factors
+3. Create feature vector along with some manually inputted features(pressure, kind of pass, body part)
+4. Pass into neural network to classify as goal/no goal
+5. Compare label to calculate xG
+
+xG Model
+1. Collect historical shot data across (Bundesliga, La Liga Premier League)
+2. Clean data to only include (x,y), distance to goal, shooting angle, + other features
+3. Build xG model based off this historical data
+
+Neural network
+1. Build neural network for classification (goal/no goal)
+input: feature vector containing key features of a shot

@@ -125,8 +125,7 @@ def extract_coordinates(annotations_path):
     return bbox_info
 
 if __name__ == "__main__":
-    annotations_path = 'screenshots/annotations/instances_default.json'
-    model_path = "models/players/50EpochModel.pt"
+    annotations_path = 'screenshots/annotations/Yamal Free Kick.json'
     img_path = "screenshots/Yamal Free Kick.png"
     main(annotations_path=annotations_path)
 
