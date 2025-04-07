@@ -28,7 +28,7 @@ def plot_shot(x, y, shot_angle=None):
     # Goal dimensions (using your exact coordinates)
     g0 = np.array([41.34, 0])  # Left goalpost (x=41.34, y=0)
     g1 = np.array([48.66, 0])  # Right goalpost (x=48.66, y=0)
-    goal_width = g1[0] - g0[0]  # 7.32m
+    goal_width = g1[0] - g0[0]  # 7.32m 
     goal_height = 2.44
     
     distance = calculate_distance_to_goal(x,y)
