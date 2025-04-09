@@ -28,6 +28,7 @@ def main(annotations_path):
     transformed_bbox_info = convert_pitch_coordinates(homography_matrix, bbox_info)
     ball_cords = get_ball_coords(transformed_bbox_info)
     angle = calculate_angle(ball_cords[0], ball_cords[1])
+    print(ball_cords)
     plot_shot(ball_cords[0], ball_cords[1], angle)  
 
 def calculate_angle(x,y):
