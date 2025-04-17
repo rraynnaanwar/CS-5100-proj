@@ -35,7 +35,7 @@ def augment_frame(frame):
     return frame
 
 # Frame Extraction Function
-def extract_frames(video_path, max_frames=60, size=(112, 112), augment=False):
+def extract_frames(video_path, max_frames=30, size=(112, 112), augment=False):
     print(f"Extracting frames from: {video_path}")
     cap = cv2.VideoCapture(video_path)
     frames = []
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     print("Training model (initial frozen CNN)...")
     history = model.fit(
         X_train, y_train,
-        epochs=10,
+        epochs=15,
         batch_size=2,
         validation_data=(X_test, y_test),
         callbacks=[tensorboard_cb, checkpoint_cb]
