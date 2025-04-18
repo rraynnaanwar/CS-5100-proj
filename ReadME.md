@@ -64,3 +64,10 @@ This project estimates the probability of a goal occurring in soccer scenarios. 
 - Jupyter notebooks
 
 ## Project Structure
+The Video Approach requires data to be added in this structure. 
+File Structure
+VideoApproach/
+├── data/
+│   ├── goal/         # Contains positive examples (videos with goals)
+│   ├── no_goal/      # Contains negative examples (videos without goals)
+│   └── test/         # Contains test data for model evaluation
