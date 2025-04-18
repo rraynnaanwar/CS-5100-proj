@@ -10,6 +10,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from sklearn.model_selection import train_test_split
 import datetime
 import  time
+import matplotlib.pyplot as plt
 
 # GPU Check
 gpus = tf.config.list_physical_devices('GPU')
@@ -84,7 +85,7 @@ def build_model(input_shape=(30, 112, 112, 3)):
         layers.TimeDistributed(layers.GlobalAveragePooling2D()),
         layers.LSTM(64, return_sequences=False, dropout=0.4),
         layers.Dense(64, activation='relu', kernel_regularizer=regularizers.l2(0.001)),
-        layers.Dropout(0.4),
+        layers.Dropout(0.3),
         layers.Dense(1, activation='sigmoid')
     ])
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -109,19 +110,19 @@ if __name__ == "__main__":
 
     log_dir = f"logs/fit/{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
     tensorboard_cb = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    checkpoint_cb = ModelCheckpoint("best_goal_model.h5", save_best_only=True, monitor="val_accuracy", mode="max")
+    checkpoint_cb = ModelCheckpoint("report_best_goal_model.h5", save_best_only=True, monitor="val_accuracy", mode="max")
 
     print("Training model (initial frozen CNN)...")
     history = model.fit(
         X_train, y_train,
-        epochs=15,
+        epochs=10,
         batch_size=2,
         validation_data=(X_test, y_test),
         callbacks=[tensorboard_cb, checkpoint_cb]
     )
 
     print("Loading best model for evaluation...")
-    best_model = tf.keras.models.load_model("best_goal_model.h5")
+    best_model = tf.keras.models.load_model("report_best_goal_model.h5")
     loss, acc = best_model.evaluate(X_test, y_test)
     print(f"Best Model Accuracy: {acc:.2f}, Loss: {loss:.4f}")
 
@@ -155,6 +156,31 @@ if __name__ == "__main__":
     best_model.save("goal_prediction_finetuned_model.h5")
     print("Final model saved as goal_prediction_finetuned_model.h5")
     """
+    # Plot Training/Validation Curves
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(history.history['loss'], label='Train Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title('Loss per Epoch')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(1, 2, 2)
+    plt.plot(history.history['accuracy'], label='Train Accuracy')
+    plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+    plt.title('Accuracy per Epoch')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.savefig('training_metrics.png')
+    plt.show()
+
     end = time.time()
 
     print("time is ", (end - start)/60," mins")
