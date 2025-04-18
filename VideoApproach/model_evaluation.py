@@ -51,7 +51,7 @@ y_true = []
 y_pred = []
 y_probs = []
 
-print("\n🔍 Starting Evaluation...\n")
+print("\n= Starting Evaluation...\n")
 
 for _, row in tqdm(df.iterrows(), total=len(df)):
     try:
@@ -66,21 +66,21 @@ for _, row in tqdm(df.iterrows(), total=len(df)):
         y_true.append(int(row["label"]))
 
     except Exception as e:
-        print(f"❌ Error processing {row['video_path']}: {e}")
+        print(f"Error processing {row['video_path']}: {e}")
 
 # === Evaluation Metrics ===
 if len(y_true) == 0:
-    print("\n❌ No valid predictions were made. Please check the video paths in your CSV.")
+    print(" No valid predictions were made. Please check the video paths in your CSV.")
 else:
-    print("\n📊 Confusion Matrix:")
+    print(" Confusion Matrix:")
     print(confusion_matrix(y_true, y_pred))
 
-    print("\n📄 Classification Report:")
+    print(" Classification Report:")
     print(classification_report(y_true, y_pred, target_names=["No Goal", "Goal"]))
 
     try:
         roc_auc = roc_auc_score(y_true, y_probs)
-        print(f"\n🔥 ROC AUC Score: {roc_auc:.4f}")
+        print(f" ROC AUC Score: {roc_auc:.4f}")
 
         # === Plot ROC Curve ===
         fpr, tpr, thresholds = roc_curve(y_true, y_probs)
@@ -95,4 +95,4 @@ else:
         plt.tight_layout()
         plt.show()
     except Exception as e:
-        print(f"⚠️ Could not compute ROC AUC: {e}")
+        print(f"️ Could not compute ROC AUC: {e}")

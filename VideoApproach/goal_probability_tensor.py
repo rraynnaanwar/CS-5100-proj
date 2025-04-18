@@ -10,6 +10,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from sklearn.model_selection import train_test_split
 import datetime
 import  time
+import matplotlib.pyplot as plt
 
 # GPU Check
 gpus = tf.config.list_physical_devices('GPU')
@@ -155,6 +156,31 @@ if __name__ == "__main__":
     best_model.save("goal_prediction_finetuned_model.h5")
     print("Final model saved as goal_prediction_finetuned_model.h5")
     """
+    # Plot Training/Validation Curves
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(history.history['loss'], label='Train Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title('Loss per Epoch')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(1, 2, 2)
+    plt.plot(history.history['accuracy'], label='Train Accuracy')
+    plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+    plt.title('Accuracy per Epoch')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.savefig('training_metrics.png')
+    plt.show()
+
     end = time.time()
 
     print("time is ", (end - start)/60," mins")
