@@ -1,0 +1,25 @@
+# Core packages
+numpy==1.24.3
+pandas==2.0.3
+matplotlib==3.7.2
+opencv-python==4.8.0.76
+tensorflow==2.13.0
+
+# Deep learning and computer vision
+scikit-learn==1.3.0
+keras==2.13.1
+pillow==10.0.0
+
+# Soccer visualization
+mplsoccer==1.1.9
+
+# Object detection
+ultralytics==8.0.180
+
+# Utility packages
+tqdm==4.66.1
+seaborn==0.12.2
+
+# Jupyter notebooks
+ipython==8.14.0
+jupyter==1.0.0
