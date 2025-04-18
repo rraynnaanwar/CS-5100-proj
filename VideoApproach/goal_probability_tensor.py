@@ -36,7 +36,7 @@ def augment_frame(frame):
     return frame
 
 # Frame Extraction Function
-def extract_frames(video_path, max_frames=30, size=(112, 112), augment=False):
+def extract_frames(video_path, max_frames=60, size=(112, 112), augment=False):
     print(f"Extracting frames from: {video_path}")
     cap = cv2.VideoCapture(video_path)
     frames = []
@@ -85,7 +85,7 @@ def build_model(input_shape=(30, 112, 112, 3)):
         layers.TimeDistributed(layers.GlobalAveragePooling2D()),
         layers.LSTM(64, return_sequences=False, dropout=0.4),
         layers.Dense(64, activation='relu', kernel_regularizer=regularizers.l2(0.001)),
-        layers.Dropout(0.3),
+        layers.Dropout(0.4),
         layers.Dense(1, activation='sigmoid')
     ])
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
     log_dir = f"logs/fit/{datetime.datetime.now().strftime('%Y%m%d-%H%M%S')}"
     tensorboard_cb = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    checkpoint_cb = ModelCheckpoint("report_best_goal_model.h5", save_best_only=True, monitor="val_accuracy", mode="max")
+    checkpoint_cb = ModelCheckpoint("best_goal_model.h5", save_best_only=True, monitor="val_accuracy", mode="max")
 
     print("Training model (initial frozen CNN)...")
     history = model.fit(
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     )
 
     print("Loading best model for evaluation...")
-    best_model = tf.keras.models.load_model("report_best_goal_model.h5")
+    best_model = tf.keras.models.load_model("best_goal_model.h5")
     loss, acc = best_model.evaluate(X_test, y_test)
     print(f"Best Model Accuracy: {acc:.2f}, Loss: {loss:.4f}")
 

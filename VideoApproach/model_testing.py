@@ -6,7 +6,7 @@ import time
 import matplotlib.pyplot as plt
 
 
-def preprocess_video(video_path, max_frames=30):
+def preprocess_video(video_path, max_frames=60):
     # Frame extraction with timing
     start_time = time.time()
 
